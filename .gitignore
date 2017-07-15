@@ -1,0 +1,12 @@
+# gitignore
+
+# Standard Unity Files
+.vs
+Library
+ProjectSettings
+Resources
+Temp
+
+# Temporary/Experimental Resources
+Assets/UnityChan*
+/*.zip
