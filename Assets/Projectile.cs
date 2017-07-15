@@ -5,8 +5,8 @@ public class Projectile : MonoBehaviour {
 
     public float velocity;
     public float duration;
-    
-	private void Update ()
+
+    private void Update ()
     {
         transform.Translate(Vector3.forward * velocity * MOVESCALE);
 

@@ -20,12 +20,15 @@ public class CharacterController : MonoBehaviour {
 
 	private void Update ()
     {
-        checkMovement();
-
         if (Input.GetKey("left shift"))
         {
             aim();
             checkFire();
+            checkAimMovement();
+        }
+        else
+        {
+            checkMovement();
         }
         
         if (Input.GetKeyUp("left shift"))
@@ -58,6 +61,29 @@ public class CharacterController : MonoBehaviour {
         }
     }
 
+    private void checkAimMovement()
+    {
+        float speed = moveSpeed * MOVESCALE;
+
+        if (Input.GetKey("up") || Input.GetKey("w"))
+        {
+            transform.Translate(new Vector3(0, 0, speed));
+        }
+        else if (Input.GetKey("down") || Input.GetKey("s"))
+        {
+            transform.Translate(new Vector3(0, 0, -speed));
+        }
+
+        if (Input.GetKey("left") || Input.GetKey("a"))
+        {
+            transform.Translate(new Vector3(-speed, 0, 0));
+        }
+        else if (Input.GetKey("right") || Input.GetKey("d"))
+        {
+            transform.Translate(new Vector3(speed, 0, 0));
+        }
+    }
+
     private void checkFire()
     {
         if (fireTimer > 0)
@@ -74,6 +100,8 @@ public class CharacterController : MonoBehaviour {
             p.transform.position = gun.position + gun.up * gun.localScale.y * 2;
 
             fireTimer = FIRETIMERMAX;
+
+            gameObject.GetComponent<AudioSource>().Play();
         }
     }
 
