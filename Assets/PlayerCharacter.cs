@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
-public class CharacterController : MonoBehaviour {
-
-    private const float MOVESCALE = 0.01f;
+public class PlayerCharacter : MonoBehaviour
+{
     private const float FIRETIMERMAX = 60f;
 
     public float moveSpeed;
@@ -17,9 +16,15 @@ public class CharacterController : MonoBehaviour {
     public Projectile projectileFab;
 
     private float fireTimer = 0;
+    public bool dead = false;
 
 	private void Update ()
     {
+        if (dead)
+        {
+            return;
+        }
+
         if (Input.GetKey("left shift"))
         {
             aim();
@@ -38,9 +43,20 @@ public class CharacterController : MonoBehaviour {
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            var rb = GetComponent<Rigidbody>();
+            rb.freezeRotation = false;
+
+            dead = true;
+        }
+    }
+
     private void checkMovement()
     {
-        float speed = moveSpeed * MOVESCALE;
+        float speed = moveSpeed * Time.deltaTime;
 
         if (Input.GetKey("up") || Input.GetKey("w"))
         {
@@ -63,7 +79,7 @@ public class CharacterController : MonoBehaviour {
 
     private void checkAimMovement()
     {
-        float speed = moveSpeed * MOVESCALE;
+        float speed = moveSpeed * Time.deltaTime;
 
         if (Input.GetKey("up") || Input.GetKey("w"))
         {

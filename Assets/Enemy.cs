@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour {
     private bool flankingLeft = true;
     private Vector3 flankCenter;
     private float movementTimer = 30f;
-    private Transform playerTfm;
+    private GameObject player;
 
     public MovementType currentMovement = MovementType.Stop;
 
@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour {
                     break;
                 case MovementType.Flank:
                     flankingLeft = Random.Range(0f, 2f) < 1f;
-                    flankCenter = playerTfm.position;
+                    flankCenter = player.transform.position;
                     currentMovement = MovementType.Flank;
                     movementTimer = Random.Range(flankTimeMin, flankTimeMax);
                     break;
@@ -57,12 +57,18 @@ public class Enemy : MonoBehaviour {
 
     private void Start()
     {
-        playerTfm = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update ()
     {
-        transform.LookAt(playerTfm);
+        if (player.GetComponent<PlayerCharacter>().dead)
+        {
+            CurrentMovement = MovementType.Stop;
+            return;
+        }
+
+        transform.LookAt(player.transform);
 
         if (movementTimer <= 0)
         {
@@ -139,8 +145,9 @@ public class Enemy : MonoBehaviour {
     private void Flank()
     {
         // Rotate around player position
-        float speed = flankingLeft ? flankSpeed : -flankSpeed;
         Vector3 vectorToCenter = transform.position - flankCenter;
+        float speed = flankingLeft ? flankSpeed : -flankSpeed;
+        speed = speed / vectorToCenter.magnitude * 180 / Mathf.PI; // maintain linear velocity
         vectorToCenter = Quaternion.AngleAxis(speed * Time.deltaTime, Vector3.up) * vectorToCenter;
         transform.position = vectorToCenter + flankCenter;
     }
