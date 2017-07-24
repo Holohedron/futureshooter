@@ -12,10 +12,13 @@ public class PlayerCharacter : MonoBehaviour
     public float mouseX;
     public float mouseY;
     public float mouseZ;
+    public float radius = Screen.width/2;
 
     public Projectile projectileFab;
+    public Texture2D crosshairImage;
 
     private float fireTimer = 0;
+    private bool aiming = false;
     public bool dead = false;
 
 	private void Update ()
@@ -28,6 +31,7 @@ public class PlayerCharacter : MonoBehaviour
         if (Input.GetKey("left shift"))
         {
             aim();
+            aiming = true;
             checkFire();
             checkAimMovement();
         }
@@ -40,6 +44,7 @@ public class PlayerCharacter : MonoBehaviour
         {
             //reset arm position
             transform.GetChild(0).rotation = new Quaternion(0, 0, 0, 0);
+            aiming = false;
         }
     }
 
@@ -51,6 +56,16 @@ public class PlayerCharacter : MonoBehaviour
             rb.freezeRotation = false;
 
             dead = true;
+        }
+    }
+
+    private void OnGUI()
+    {
+        if (aiming)
+        {
+            float xMin = Screen.width - (Screen.width - Input.mousePosition.x) - (crosshairImage.width / 2);
+            float yMin = (Screen.height - Input.mousePosition.y) - (crosshairImage.height / 2);
+            GUI.DrawTexture(new Rect(xMin, yMin, crosshairImage.width, crosshairImage.height), crosshairImage);
         }
     }
 
@@ -123,17 +138,44 @@ public class PlayerCharacter : MonoBehaviour
 
     private void aim()
     {
-        var mousePos = Input.mousePosition;
-        mousePos.x -= Screen.width / 2;
-        mousePos.y -= Screen.height / 2;
-        mousePos.z = 300;
-
         Transform gun = transform.GetChild(0);
-        gun.LookAt(transform.TransformPoint(mousePos));
 
+        RaycastHit hitInfo;
+        Vector3 targetPos;
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hitInfo, 1000))
+        {
+            targetPos = hitInfo.point;
+            gun.LookAt(targetPos);
+        }
+        else
+        {
+            // Roughly aim in the right direction if ray hits nothing
+            targetPos = Input.mousePosition;
+            targetPos.x -= Screen.width / 2;
+            targetPos.y -= Screen.height / 2;
+            var mousePosX = targetPos.x;
+
+            // Look at a spot around an imaginary sphere around the character
+            var targetRadius = radius;
+            targetPos.z = getZOnSphere(targetPos.x, targetPos.y, targetRadius);
+            targetPos = transform.TransformPoint(targetPos);
+            gun.LookAt(targetPos);
+
+            // Account for the camera's rotated view
+            var camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
+            gun.Rotate(new Vector3(camera.rotation.eulerAngles.x * (1 - (Mathf.Abs(mousePosX)/(Screen.width))), 0, 0));
+        }
+        
         //Debug info
-        mouseX = mousePos.x;
-        mouseY = mousePos.y;
-        mouseZ = mousePos.z;
+        transform.InverseTransformPoint(targetPos);
+        mouseX = targetPos.x;
+        mouseY = targetPos.y;
+        mouseZ = targetPos.z;
+    }
+
+    private float getZOnSphere(float x, float y, float r)
+    {
+        return Mathf.Sqrt((r * r) - (x * x) - (y * y))/2;
     }
 }
