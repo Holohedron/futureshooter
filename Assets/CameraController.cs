@@ -4,6 +4,8 @@ public class CameraController : MonoBehaviour
 {    
     public float followDistance;
     public float followHeight;
+    public float followWidth;
+    public float adjustSpeed;
     public float deathCamMoveSpeed;
     public float deathCamRotateSpeed;
     public float deathCamMaxDist;
@@ -35,17 +37,23 @@ public class CameraController : MonoBehaviour
     private void trackPlayer()
     {
         var target = player.transform;
-
-        transform.LookAt(target);
+        
 
         if (Input.GetKey("left shift"))
         {
-            transform.position = target.TransformPoint(new Vector3(0, followHeight / 2, -followDistance / 2));
+            transform.position = setFollowPoint(target.TransformPoint(new Vector3(followWidth, followHeight * 0.75f, -followDistance / 2)));
         }
         else
         {
-            transform.position = target.TransformPoint(new Vector3(0, followHeight, -followDistance));
+            transform.position = setFollowPoint(target.TransformPoint(new Vector3(0, followHeight, -followDistance)));
+            transform.LookAt(target);
         }
+    }
+
+    private Vector3 setFollowPoint(Vector3 followPoint)
+    {
+        var velocity = Vector3.zero;
+        return Vector3.SmoothDamp(transform.position, followPoint, ref velocity, 0.03f);
     }
 
     private void deathCam()
