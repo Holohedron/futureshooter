@@ -81,7 +81,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CameraController.cs" />
-    <Compile Include="Assets\Characters\Enemy.cs" />
+    <Compile Include="Assets\Characters\Enemy\FlankState.cs" />
+    <Compile Include="Assets\Characters\Enemy\StopState.cs" />
+    <Compile Include="Assets\Characters\Enemy\AdvanceState.cs" />
+    <Compile Include="Assets\Characters\Enemy\Enemy.cs" />
+    <Compile Include="Assets\Characters\Enemy\EnemyState.cs" />
     <Compile Include="Assets\Characters\Player\ShooterState.cs" />
     <Compile Include="Assets\Characters\Player\MeleeState.cs" />
     <Compile Include="Assets\Characters\Player\PlayerCharacter.cs" />

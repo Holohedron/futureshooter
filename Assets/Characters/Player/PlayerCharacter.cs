@@ -32,7 +32,7 @@ public class PlayerCharacter : MonoBehaviour
         }
 
         // State implementation
-        PlayerState newState = state.HandleTransition(this);
+        var newState = state.HandleTransition(this);
         if (newState != null)
         {
             state.OnExit(this);
@@ -40,7 +40,7 @@ public class PlayerCharacter : MonoBehaviour
             state.OnEnter(this);
         }
 
-        state.HandleUpdate(GetComponent<PlayerCharacter>());
+        state.HandleUpdate(this);
     }
 
     private void OnCollisionEnter(Collision collision)
