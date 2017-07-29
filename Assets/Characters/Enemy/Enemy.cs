@@ -8,11 +8,17 @@ public class Enemy : MonoBehaviour
     public int flankTimeMax;
     public int stopTimeMin;
     public int stopTimeMax;
+    public int hitTime;
     public float advanceSpeed;
     public float flankSpeed;
+
+    public int health;
     
     private GameObject player;
     private EnemyState state;
+
+    public delegate void EnemyHit();
+    public event EnemyHit OnEnemyHit;
 
     private void Awake()
     {
@@ -42,8 +48,27 @@ public class Enemy : MonoBehaviour
     {
         if(collider.CompareTag("Projectile"))
         {
-            Destroy(collider.gameObject);
-            Destroy(gameObject);
+            HandleProjectileHit(collider);
+        }
+    }
+
+    private void HandleProjectileHit(Collider projectile)
+    {
+        Destroy(projectile.gameObject);
+
+        OnEnemyHit();
+        var audioSource = GetComponent<AudioSource>();
+        audioSource.Play();
+
+        --health;
+        if (health <= 0)
+        {
+            GetComponent<MeshRenderer>().enabled = false;
+            var renderers = GetComponentsInChildren<MeshRenderer>();
+            foreach (var renderer in renderers)
+                renderer.enabled = false;
+            GetComponent<BoxCollider>().enabled = false;
+            Destroy(gameObject, audioSource.clip.length);
         }
     }
 }

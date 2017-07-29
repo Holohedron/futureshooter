@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
-public class StopState : BaseEnemyState, EnemyState
+public class HitState : BaseEnemyState, EnemyState
 {
+    private const int COLORTIME = 5;
+
     private int timer;
-    private Transform player;
-    private bool gotHit = false;
+    private int colorTimer;
 
     public EnemyState HandleTransition(Enemy enemy)
     {
@@ -24,8 +25,17 @@ public class StopState : BaseEnemyState, EnemyState
     public void HandleUpdate(Enemy enemy)
     {
         // no movement
-        enemy.transform.LookAt(player);
         --timer;
+
+        if (colorTimer <= 0)
+        {
+            Material mat = Resources.Load("EnemyMat", typeof(Material)) as Material;
+            enemy.GetComponent<Renderer>().material = mat;
+        }
+        else
+        {
+            --colorTimer;
+        }
     }
 
     public void OnEnter(Enemy enemy)
@@ -33,8 +43,10 @@ public class StopState : BaseEnemyState, EnemyState
         base.OnEnter(enemy);
 
         // set timer based on enemy settings
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        timer = Random.Range(enemy.stopTimeMin, enemy.stopTimeMax+1);
+        timer = enemy.hitTime;
+        colorTimer = COLORTIME;
+        Material mat = Resources.Load("EnemyHurtMat", typeof(Material)) as Material;
+        enemy.GetComponent<Renderer>().material = mat;
     }
 
     public void OnExit(Enemy enemy)

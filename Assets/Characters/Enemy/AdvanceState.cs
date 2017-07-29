@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 
-public class AdvanceState : ScriptableObject, EnemyState
+public class AdvanceState : BaseEnemyState, EnemyState
 {
     private int timer;
     private Transform player;
 
     public EnemyState HandleTransition(Enemy enemy)
     {
+        var baseTransition = base.HandleTransition(enemy);
+        if (baseTransition != null)
+            return baseTransition;
+
         if (timer > 0)
             return null;
         
@@ -25,6 +29,8 @@ public class AdvanceState : ScriptableObject, EnemyState
 
     public void OnEnter(Enemy enemy)
     {
+        base.OnEnter(enemy);
+
         // Set timer based on enemy settings
         timer = Random.Range(enemy.advanceTimeMin, enemy.advanceTimeMax + 1);
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -32,7 +38,7 @@ public class AdvanceState : ScriptableObject, EnemyState
 
     public void OnExit(Enemy enemy)
     {
-        // nothing
+        base.OnExit(enemy);
     }
 
     private void doAdvance(Enemy enemy)

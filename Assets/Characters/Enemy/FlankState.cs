@@ -1,14 +1,19 @@
 ﻿using UnityEngine;
 
-public class FlankState : ScriptableObject, EnemyState
+public class FlankState : BaseEnemyState, EnemyState
 {
     Vector3 flankCenter;
     bool flankingLeft;
     private int timer;
     private Transform player;
+    private bool gotHit = false;
 
     public EnemyState HandleTransition(Enemy enemy)
     {
+        var baseTransition = base.HandleTransition(enemy);
+        if (baseTransition != null)
+            return baseTransition;
+
         if (timer > 0)
             return null;
 
@@ -27,6 +32,8 @@ public class FlankState : ScriptableObject, EnemyState
 
     public void OnEnter(Enemy enemy)
     {
+        base.OnEnter(enemy);
+
         // set timer based on enemy settings
         player = GameObject.FindGameObjectWithTag("Player").transform;
         timer = Random.Range(enemy.flankTimeMin, enemy.flankTimeMax + 1);
@@ -36,7 +43,7 @@ public class FlankState : ScriptableObject, EnemyState
 
     public void OnExit(Enemy enemy)
     {
-        // nothing
+        base.OnExit(enemy);
     }
 
     private void doFlank(Enemy enemy)

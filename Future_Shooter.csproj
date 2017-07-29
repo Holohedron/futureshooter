@@ -82,6 +82,8 @@
   <ItemGroup>
     <Compile Include="Assets\CameraController.cs" />
     <Compile Include="Assets\Characters\Enemy\FlankState.cs" />
+    <Compile Include="Assets\Characters\Enemy\BaseEnemyState.cs" />
+    <Compile Include="Assets\Characters\Enemy\HitState.cs" />
     <Compile Include="Assets\Characters\Enemy\StopState.cs" />
     <Compile Include="Assets\Characters\Enemy\AdvanceState.cs" />
     <Compile Include="Assets\Characters\Enemy\Enemy.cs" />

@@ -51,6 +51,7 @@ public class PlayerCharacter : MonoBehaviour
             rb.freezeRotation = false;
 
             dead = true;
+            aiming = false;
         }
     }
 
