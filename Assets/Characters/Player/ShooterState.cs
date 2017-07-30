@@ -88,15 +88,15 @@ public class ShooterState : ScriptableObject, PlayerState
         if (fireTimer > 0)
         {
             fireTimer -= player.fireRate;
+            return;
         }
 
-        if ((Input.GetKey("space") || Input.GetMouseButton(0)) && fireTimer <= 0)
+        if ((Input.GetKey("space") || Input.GetMouseButton(0)))
         {
             Transform gun = player.transform.GetChild(0).GetChild(0);
-
-            Projectile p = Instantiate<Projectile>(player.projectileFab);
-            p.transform.rotation = gun.rotation * Quaternion.Euler(-90, 0, 0);
-            p.transform.position = gun.position + gun.up * gun.localScale.y * 2;
+            var projectilePos = gun.position + gun.up * gun.localScale.y * 2;
+            var projectileRot = gun.rotation * Quaternion.Euler(-90, 0, 0);
+            Projectile p = Instantiate<Projectile>(player.projectileFab, projectilePos, projectileRot);
 
             fireTimer = FIRETIMERMAX;
 

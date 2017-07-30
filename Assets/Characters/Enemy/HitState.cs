@@ -7,7 +7,7 @@ public class HitState : BaseEnemyState, EnemyState
     private int timer;
     private int colorTimer;
 
-    public EnemyState HandleTransition(Enemy enemy)
+    public new EnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -22,7 +22,7 @@ public class HitState : BaseEnemyState, EnemyState
             return ScriptableObject.CreateInstance<FlankState>();
     }
 
-    public void HandleUpdate(Enemy enemy)
+    public new void HandleUpdate(Enemy enemy)
     {
         // no movement
         --timer;
@@ -38,7 +38,7 @@ public class HitState : BaseEnemyState, EnemyState
         }
     }
 
-    public void OnEnter(Enemy enemy)
+    public new void OnEnter(Enemy enemy)
     {
         base.OnEnter(enemy);
 
@@ -49,7 +49,7 @@ public class HitState : BaseEnemyState, EnemyState
         enemy.GetComponent<Renderer>().material = mat;
     }
 
-    public void OnExit(Enemy enemy)
+    public new void OnExit(Enemy enemy)
     {
         base.OnExit(enemy);
     }

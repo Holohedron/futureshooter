@@ -6,9 +6,8 @@ public class FlankState : BaseEnemyState, EnemyState
     bool flankingLeft;
     private int timer;
     private Transform player;
-    private bool gotHit = false;
 
-    public EnemyState HandleTransition(Enemy enemy)
+    public new EnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -23,14 +22,14 @@ public class FlankState : BaseEnemyState, EnemyState
             return ScriptableObject.CreateInstance<AdvanceState>();
     }
 
-    public void HandleUpdate(Enemy enemy)
+    public new void HandleUpdate(Enemy enemy)
     {
         enemy.transform.LookAt(player);
         doFlank(enemy);
         --timer;
     }
 
-    public void OnEnter(Enemy enemy)
+    public new void OnEnter(Enemy enemy)
     {
         base.OnEnter(enemy);
 
@@ -41,7 +40,7 @@ public class FlankState : BaseEnemyState, EnemyState
         flankingLeft = Random.value > 0.5f;
     }
 
-    public void OnExit(Enemy enemy)
+    public new void OnExit(Enemy enemy)
     {
         base.OnExit(enemy);
     }

@@ -6,9 +6,13 @@ public class Projectile : MonoBehaviour {
     public float velocity;
     public float duration;
 
+    private void Start()
+    {
+        GetComponent<Rigidbody>().velocity = transform.TransformDirection(Vector3.forward) * velocity;
+    }
+
     private void Update ()
     {
-        transform.Translate(Vector3.forward * velocity * MOVESCALE);
 
         if (duration > 0 )
         {

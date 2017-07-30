@@ -5,7 +5,7 @@ public class AdvanceState : BaseEnemyState, EnemyState
     private int timer;
     private Transform player;
 
-    public EnemyState HandleTransition(Enemy enemy)
+    public new EnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -20,14 +20,14 @@ public class AdvanceState : BaseEnemyState, EnemyState
             return ScriptableObject.CreateInstance<FlankState>();
     }
 
-    public void HandleUpdate(Enemy enemy)
+    public new void HandleUpdate(Enemy enemy)
     {
         enemy.transform.LookAt(player);
         doAdvance(enemy);
         --timer;
     }
 
-    public void OnEnter(Enemy enemy)
+    public new void OnEnter(Enemy enemy)
     {
         base.OnEnter(enemy);
 
@@ -36,7 +36,7 @@ public class AdvanceState : BaseEnemyState, EnemyState
         player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    public void OnExit(Enemy enemy)
+    public new void OnExit(Enemy enemy)
     {
         base.OnExit(enemy);
     }

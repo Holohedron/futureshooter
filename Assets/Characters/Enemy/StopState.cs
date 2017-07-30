@@ -4,9 +4,8 @@ public class StopState : BaseEnemyState, EnemyState
 {
     private int timer;
     private Transform player;
-    private bool gotHit = false;
 
-    public EnemyState HandleTransition(Enemy enemy)
+    public new EnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -21,14 +20,14 @@ public class StopState : BaseEnemyState, EnemyState
             return ScriptableObject.CreateInstance<FlankState>();
     }
 
-    public void HandleUpdate(Enemy enemy)
+    public new void HandleUpdate(Enemy enemy)
     {
         // no movement
         enemy.transform.LookAt(player);
         --timer;
     }
 
-    public void OnEnter(Enemy enemy)
+    public new void OnEnter(Enemy enemy)
     {
         base.OnEnter(enemy);
 
@@ -37,7 +36,7 @@ public class StopState : BaseEnemyState, EnemyState
         timer = Random.Range(enemy.stopTimeMin, enemy.stopTimeMax+1);
     }
 
-    public void OnExit(Enemy enemy)
+    public new void OnExit(Enemy enemy)
     {
         base.OnExit(enemy);
     }
