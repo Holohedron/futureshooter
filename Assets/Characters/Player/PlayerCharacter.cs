@@ -6,6 +6,7 @@ public class PlayerCharacter : MonoBehaviour
 
     public float moveSpeed;
     public float turnSpeed;
+    public float aimingTurnSpeed;
     public float fireRate;
     
     // for tuning aim when aiming at nothing

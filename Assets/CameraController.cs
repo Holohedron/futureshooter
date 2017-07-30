@@ -9,6 +9,11 @@ public class CameraController : MonoBehaviour
     public float deathCamMoveSpeed;
     public float deathCamRotateSpeed;
     public float deathCamMaxDist;
+
+    public int aimViewOffsetX;
+    public int aimViewOffsetY;
+    public int aimViewOffsetZ;
+
     public Vector3 rotationAxis;
     private PlayerCharacter player;
     private Vector3? deadPlayerPos = null;
@@ -42,6 +47,8 @@ public class CameraController : MonoBehaviour
         if (Input.GetKey("left shift"))
         {
             transform.position = setFollowPoint(target.TransformPoint(new Vector3(followWidth, followHeight * 0.75f, -followDistance / 2)));
+            Vector3 focalPoint = target.TransformPoint(new Vector3(aimViewOffsetX, aimViewOffsetY, aimViewOffsetZ));
+            transform.LookAt(focalPoint);
         }
         else
         {

@@ -1,9 +1,12 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ShooterState : ScriptableObject, PlayerState
 {
     private const float FIRETIMERMAX = 60.0f;
+    private const int BOUNDUPPERX = 15; // percent of the width of the screen
+    private const int BOUNDLOWERX = 15; // percent of the width of the screen
+    private const int FASTBOUNDUPPERX = 5;
+    private const int FASTBOUNDLOWERX = 5;
     private float fireTimer;
 
     public PlayerState HandleTransition(PlayerCharacter player)
@@ -33,6 +36,7 @@ public class ShooterState : ScriptableObject, PlayerState
     public void HandleUpdate(PlayerCharacter player)
     {
         doMovement(player);
+        doRotate(player);
         doFire(player);
         doAim(player);
     }
@@ -58,6 +62,25 @@ public class ShooterState : ScriptableObject, PlayerState
         {
             player.transform.Translate(new Vector3(speed, 0, 0));
         }
+    }
+
+    private void doRotate(PlayerCharacter player)
+    {
+        // rotate at set speed when mouse is outside of bounding box
+        int fastUpperBoundX = Screen.width - (Screen.width * FASTBOUNDLOWERX / 100);
+        int fastLowerBoundX = Screen.width * FASTBOUNDLOWERX / 100;
+        int upperBoundX = Screen.width - (Screen.width * BOUNDLOWERX / 100);
+        int lowerBoundX = Screen.width * BOUNDUPPERX / 100;
+
+        var mousePos = Input.mousePosition;
+        if (mousePos.x > fastUpperBoundX)
+            player.transform.Rotate(new Vector3(0, player.aimingTurnSpeed * Time.deltaTime * 2, 0));
+        else if (mousePos.x > upperBoundX)
+            player.transform.Rotate(new Vector3(0, player.aimingTurnSpeed * Time.deltaTime, 0));
+        else if (mousePos.x < fastLowerBoundX)
+            player.transform.Rotate(new Vector3(0, -player.aimingTurnSpeed * Time.deltaTime * 2, 0));
+        else if (mousePos.x < lowerBoundX)
+            player.transform.Rotate(new Vector3(0, -player.aimingTurnSpeed * Time.deltaTime, 0));
     }
 
     private void doFire(PlayerCharacter player)
