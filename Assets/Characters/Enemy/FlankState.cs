@@ -52,6 +52,7 @@ public class FlankState : BaseEnemyState, EnemyState
         float speed = flankingLeft ? enemy.flankSpeed : -enemy.flankSpeed;
         speed = speed / vectorToCenter.magnitude * 180 / Mathf.PI; // maintain linear velocity
         vectorToCenter = Quaternion.AngleAxis(speed * Time.deltaTime, Vector3.up) * vectorToCenter;
-        enemy.transform.position = vectorToCenter + flankCenter;
+        Vector3 targetPos = vectorToCenter + flankCenter;
+        enemy.GetComponent<CharacterController>().Move(targetPos - enemy.transform.position);
     }
 }

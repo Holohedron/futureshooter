@@ -33,16 +33,21 @@ public class MeleeState : ScriptableObject, PlayerState
 
         if (Input.GetKey("up") || Input.GetKey("w"))
         {
-            player.transform.Translate(new Vector3(0, 0, speed));
+            Vector3 moveVec = new Vector3(0, 0, speed);
+            moveVec = player.transform.TransformDirection(moveVec);
+            player.GetComponent<CharacterController>().Move(moveVec);
         }
         else if (Input.GetKey("down") || Input.GetKey("s"))
         {
-            player.transform.Translate(new Vector3(0, 0, -speed));
+            Vector3 moveVec = new Vector3(0, 0, -speed);
+            moveVec = player.transform.TransformDirection(moveVec);
+            player.GetComponent<CharacterController>().Move(moveVec);
         }
 
         if (Input.GetKey("left") || Input.GetKey("a"))
         {
             player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
+
         }
         else if (Input.GetKey("right") || Input.GetKey("d"))
         {

@@ -44,6 +44,6 @@ public class AdvanceState : BaseEnemyState, EnemyState
     private void doAdvance(Enemy enemy)
     {
         // Move towards player
-        enemy.transform.Translate(Vector3.forward * enemy.advanceSpeed * Time.deltaTime);
+        enemy.GetComponent<CharacterController>().Move(enemy.transform.TransformDirection(Vector3.forward) * enemy.advanceSpeed * Time.deltaTime);
     }
 }

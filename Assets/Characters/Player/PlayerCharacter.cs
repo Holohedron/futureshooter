@@ -44,15 +44,11 @@ public class PlayerCharacter : MonoBehaviour
         state.HandleUpdate(this);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (hit.gameObject.CompareTag("Enemy"))
         {
-            var rb = GetComponent<Rigidbody>();
-            rb.freezeRotation = false;
-
-            dead = true;
-            aiming = false;
+            Die();
         }
     }
 
@@ -64,5 +60,16 @@ public class PlayerCharacter : MonoBehaviour
             float yMin = (Screen.height - Input.mousePosition.y) - (crosshairImage.height / 2);
             GUI.DrawTexture(new Rect(xMin, yMin, crosshairImage.width, crosshairImage.height), crosshairImage);
         }
+    }
+
+    public void Die()
+    {
+        GetComponent<CharacterController>().enabled = false;
+        gameObject.AddComponent<CapsuleCollider>();
+        gameObject.AddComponent<Rigidbody>();
+        transform.Rotate(new Vector3(1, 0, 1)); // to make sure we fall over dramatically
+
+        dead = true;
+        aiming = false;
     }
 }

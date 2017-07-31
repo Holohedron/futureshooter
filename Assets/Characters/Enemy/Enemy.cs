@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     public float flankSpeed;
 
     public int health;
+    public bool dbugFreeze = false;
     
     private GameObject player;
     private EnemyState state;
@@ -35,7 +36,7 @@ public class Enemy : MonoBehaviour
         }
 
         var newState = state.HandleTransition(this);
-        if (newState != null)
+        if (newState != null && !dbugFreeze)
         {
             state.OnExit(this);
             state = newState;
@@ -46,11 +47,22 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(collider.CompareTag("Projectile"))
+        if (collider.CompareTag("Projectile"))
         {
             HandleProjectileHit(collider);
         }
     }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        PlayerCharacter playerChar = player.GetComponent<PlayerCharacter>();
+
+        if (hit.gameObject.CompareTag("Player"))
+        {
+            player.GetComponent<PlayerCharacter>().Die();
+        }
+    }
+
 
     private void HandleProjectileHit(Collider projectile)
     {
@@ -67,7 +79,7 @@ public class Enemy : MonoBehaviour
             var renderers = GetComponentsInChildren<MeshRenderer>();
             foreach (var renderer in renderers)
                 renderer.enabled = false;
-            GetComponent<BoxCollider>().enabled = false;
+            GetComponent<CharacterController>().enabled = false;
             Destroy(gameObject, audioSource.clip.length);
         }
     }
