@@ -88,10 +88,12 @@
     <Compile Include="Assets\Characters\Enemy\AdvanceState.cs" />
     <Compile Include="Assets\Characters\Enemy\Enemy.cs" />
     <Compile Include="Assets\Characters\Enemy\EnemyState.cs" />
+    <Compile Include="Assets\Characters\Player\HitState.cs" />
     <Compile Include="Assets\Characters\Player\ShooterState.cs" />
     <Compile Include="Assets\Characters\Player\MeleeState.cs" />
     <Compile Include="Assets\Characters\Player\PlayerCharacter.cs" />
     <Compile Include="Assets\Characters\Player\PlayerState.cs" />
+    <Compile Include="Assets\HUD.cs" />
     <Compile Include="Assets\Projectile.cs" />
     <Compile Include="Assets\UnityChan\Scripts\FaceUpdate.cs" />
     <Compile Include="Assets\UnityChan\Scripts\IdleChanger.cs" />

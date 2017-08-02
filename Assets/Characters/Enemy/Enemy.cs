@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
 
         if (hit.gameObject.CompareTag("Player"))
         {
-            player.GetComponent<PlayerCharacter>().Die();
+            player.GetComponent<PlayerCharacter>().OnPlayerDamaged();
         }
     }
 

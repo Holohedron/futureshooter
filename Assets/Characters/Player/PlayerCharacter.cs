@@ -1,4 +1,12 @@
 ﻿using UnityEngine;
+using System;
+
+using Player;
+
+public class PlayerDamagedEventArgs : EventArgs
+{
+    public int Health { get; set; }
+}
 
 public class PlayerCharacter : MonoBehaviour
 {
@@ -8,6 +16,11 @@ public class PlayerCharacter : MonoBehaviour
     public float turnSpeed;
     public float aimingTurnSpeed;
     public float fireRate;
+
+    public int maxHealth = 4;
+    public int health;
+    public int hitTime;
+    public float bounceback;
     
     // for tuning aim when aiming at nothing
     public float radius = Screen.width/2;
@@ -20,9 +33,13 @@ public class PlayerCharacter : MonoBehaviour
 
     private PlayerState state;
 
+    // events
+    public event EventHandler<PlayerDamagedEventArgs> PlayerDamaged;
+
     private void Awake()
     {
         state = ScriptableObject.CreateInstance<MeleeState>();
+        health = maxHealth;
     }
 
     private void Update ()
@@ -48,7 +65,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (hit.gameObject.CompareTag("Enemy"))
         {
-            Die();
+            OnPlayerDamaged();
         }
     }
 
@@ -71,5 +88,15 @@ public class PlayerCharacter : MonoBehaviour
 
         dead = true;
         aiming = false;
+    }
+
+    public void OnPlayerDamaged()
+    {
+        //--health;
+        //if (health <= 0)
+        //    Die();
+        state.HandleHit(this);
+        if (PlayerDamaged != null)
+            PlayerDamaged(this, new PlayerDamagedEventArgs() { Health = health });
     }
 }

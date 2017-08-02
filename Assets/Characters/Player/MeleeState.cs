@@ -1,57 +1,70 @@
 ﻿using UnityEngine;
 
-public class MeleeState : ScriptableObject, PlayerState
+namespace Player
 {
-    public PlayerState HandleTransition(PlayerCharacter player)
+    public class MeleeState : ScriptableObject, PlayerState
     {
-        // hold aim key to go into Shooter State
-        if (Input.GetKey("left shift"))
+        private bool hit = false;
+
+        public PlayerState HandleTransition(PlayerCharacter player)
         {
-            return ScriptableObject.CreateInstance<ShooterState>();
-        }
-        return null;
-    }
-
-    public void OnEnter(PlayerCharacter player)
-    {
-        // do nothing
-    }
-
-    public void OnExit(PlayerCharacter player)
-    {
-        // do nothing
-    }
-
-    public void HandleUpdate(PlayerCharacter player)
-    {
-        doMovement(player);
-    }
-
-    private void doMovement(PlayerCharacter player)
-    {
-        float speed = player.moveSpeed * Time.deltaTime;
-
-        if (Input.GetKey("up") || Input.GetKey("w"))
-        {
-            Vector3 moveVec = new Vector3(0, 0, speed);
-            moveVec = player.transform.TransformDirection(moveVec);
-            player.GetComponent<CharacterController>().Move(moveVec);
-        }
-        else if (Input.GetKey("down") || Input.GetKey("s"))
-        {
-            Vector3 moveVec = new Vector3(0, 0, -speed);
-            moveVec = player.transform.TransformDirection(moveVec);
-            player.GetComponent<CharacterController>().Move(moveVec);
+            if (hit)
+                return ScriptableObject.CreateInstance<HitState>();
+            if (Input.GetKey("left shift"))
+                return ScriptableObject.CreateInstance<ShooterState>();
+            return null;
         }
 
-        if (Input.GetKey("left") || Input.GetKey("a"))
+        public void OnEnter(PlayerCharacter player)
         {
-            player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
-
+            // do nothing
         }
-        else if (Input.GetKey("right") || Input.GetKey("d"))
+
+        public void OnExit(PlayerCharacter player)
         {
-            player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
+            // do nothing
+        }
+
+        public void HandleUpdate(PlayerCharacter player)
+        {
+            doMovement(player);
+        }
+
+        public void HandleHit(PlayerCharacter player)
+        {
+            --player.health;
+            hit = true;
+            if (player.health <= 0)
+                player.Die();
+        }
+
+        private void doMovement(PlayerCharacter player)
+        {
+            float speed = player.moveSpeed * Time.deltaTime;
+
+            if (Input.GetKey("up") || Input.GetKey("w"))
+            {
+                Vector3 moveVec = new Vector3(0, 0, speed);
+                moveVec = player.transform.TransformDirection(moveVec);
+                player.GetComponent<CharacterController>().Move(moveVec);
+            }
+            else if (Input.GetKey("down") || Input.GetKey("s"))
+            {
+                Vector3 moveVec = new Vector3(0, 0, -speed);
+                moveVec = player.transform.TransformDirection(moveVec);
+                player.GetComponent<CharacterController>().Move(moveVec);
+            }
+
+            if (Input.GetKey("left") || Input.GetKey("a"))
+            {
+                player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
+
+            }
+            else if (Input.GetKey("right") || Input.GetKey("d"))
+            {
+                player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
+            }
         }
     }
+
 }
