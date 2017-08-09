@@ -39,7 +39,8 @@ public class HUD : MonoBehaviour
 
     private void OnDestroy()
     {
-        var player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacter>();
-        player.PlayerDamaged -= UpdateHealth;
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player)
+            player.GetComponent<PlayerCharacter>().PlayerDamaged -= UpdateHealth;
     }
 }

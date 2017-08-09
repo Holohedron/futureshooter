@@ -28,12 +28,14 @@ namespace Player
         public void HandleUpdate(PlayerCharacter player)
         {
             doMovement(player);
+            doMelee(player);
         }
 
         public void HandleHit(PlayerCharacter player)
         {
             --player.health;
             hit = true;
+            player.GetComponent<AudioSource>().PlayOneShot(player.hurtSFX);
             if (player.health <= 0)
                 player.Die();
         }
@@ -58,11 +60,19 @@ namespace Player
             if (Input.GetKey("left") || Input.GetKey("a"))
             {
                 player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
-
             }
             else if (Input.GetKey("right") || Input.GetKey("d"))
             {
                 player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
+            }
+        }
+
+        private void doMelee(PlayerCharacter player)
+        {
+            if (Input.GetKeyDown("space"))
+            {
+                var anim = player.GetComponentInChildren<Animator>();
+                anim.SetTrigger("SwingSword");
             }
         }
     }

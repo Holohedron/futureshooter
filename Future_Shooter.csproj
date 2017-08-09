@@ -94,6 +94,7 @@
     <Compile Include="Assets\Characters\Player\PlayerCharacter.cs" />
     <Compile Include="Assets\Characters\Player\PlayerState.cs" />
     <Compile Include="Assets\HUD.cs" />
+    <Compile Include="Assets\Hitbox.cs" />
     <Compile Include="Assets\Projectile.cs" />
     <Compile Include="Assets\UnityChan\Scripts\FaceUpdate.cs" />
     <Compile Include="Assets\UnityChan\Scripts\IdleChanger.cs" />

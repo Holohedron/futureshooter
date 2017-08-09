@@ -5,10 +5,10 @@ namespace Player
     public class ShooterState : ScriptableObject, PlayerState
     {
         private const float FIRETIMERMAX = 60.0f;
-        private const int BOUNDUPPERX = 15; // percent of the width of the screen
-        private const int BOUNDLOWERX = 15; // percent of the width of the screen
-        private const int FASTBOUNDUPPERX = 5;
-        private const int FASTBOUNDLOWERX = 5;
+        private const int BOUNDUPPERX = 25; // percent of the width of the screen
+        private const int BOUNDLOWERX = 25; // percent of the width of the screen
+        private const int FASTBOUNDUPPERX = 15;
+        private const int FASTBOUNDLOWERX = 15;
         private float fireTimer;
         private bool hit = false;
 
@@ -47,6 +47,7 @@ namespace Player
         {
             --player.health;
             hit = true;
+            player.GetComponent<AudioSource>().PlayOneShot(player.hurtSFX);
             if (player.health <= 0)
                 player.Die();
         }
@@ -110,7 +111,7 @@ namespace Player
 
                 fireTimer = FIRETIMERMAX;
 
-                player.gameObject.GetComponent<AudioSource>().Play();
+                player.gameObject.GetComponent<AudioSource>().PlayOneShot(player.projectileSFX);
             }
         }
 

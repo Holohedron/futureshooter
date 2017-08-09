@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
@@ -51,6 +52,10 @@ public class Enemy : MonoBehaviour
         {
             HandleProjectileHit(collider);
         }
+        if (collider.CompareTag("Hitbox"))
+        {
+            HandleHitboxCollision(collider);
+        }
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
@@ -67,12 +72,24 @@ public class Enemy : MonoBehaviour
     private void HandleProjectileHit(Collider projectile)
     {
         Destroy(projectile.gameObject);
+        --health;
+        HandleHit();
+    }
 
+    private void HandleHitboxCollision(Collider collider)
+    {
+        var hitboxDamage = collider.gameObject.GetComponent<Hitbox>().damage;
+        health -= hitboxDamage;
+        HandleHit();
+    }
+
+    private void HandleHit()
+    {
         OnEnemyHit();
+
         var audioSource = GetComponent<AudioSource>();
         audioSource.Play();
 
-        --health;
         if (health <= 0)
         {
             GetComponent<MeshRenderer>().enabled = false;

@@ -21,6 +21,9 @@ public class PlayerCharacter : MonoBehaviour
     public int health;
     public int hitTime;
     public float bounceback;
+
+    public AudioClip projectileSFX;
+    public AudioClip hurtSFX;
     
     // for tuning aim when aiming at nothing
     public float radius = Screen.width/2;
