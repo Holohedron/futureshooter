@@ -30,6 +30,7 @@ public class PlayerCharacter : MonoBehaviour
 
     public Projectile projectileFab;
     public Texture2D crosshairImage;
+    public Vector2 reticlePos;
 
     public bool aiming = false;
     public bool dead = false;
@@ -41,6 +42,7 @@ public class PlayerCharacter : MonoBehaviour
 
     private void Awake()
     {
+        reticlePos = new Vector2(Screen.width/2, Screen.height/2);
         state = ScriptableObject.CreateInstance<MeleeState>();
         health = maxHealth;
     }
@@ -76,8 +78,8 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (aiming)
         {
-            float xMin = Screen.width - (Screen.width - Input.mousePosition.x) - (crosshairImage.width / 2);
-            float yMin = (Screen.height - Input.mousePosition.y) - (crosshairImage.height / 2);
+            float xMin = reticlePos.x - (crosshairImage.width / 2);
+            float yMin = (Screen.height - reticlePos.y) - (crosshairImage.height / 2);
             GUI.DrawTexture(new Rect(xMin, yMin, crosshairImage.width, crosshairImage.height), crosshairImage);
         }
     }

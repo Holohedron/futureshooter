@@ -5,18 +5,24 @@ namespace Player
     public class ShooterState : ScriptableObject, PlayerState
     {
         private const float FIRETIMERMAX = 60.0f;
-        private const int BOUNDUPPERX = 25; // percent of the width of the screen
-        private const int BOUNDLOWERX = 25; // percent of the width of the screen
-        private const int FASTBOUNDUPPERX = 15;
-        private const int FASTBOUNDLOWERX = 15;
+        private const int BOUNDX = 40; // percent of the width of the screen
+        private const int FASTBOUNDX = 20;
+        private const int RETICLEBOUNDX = 35;
+        private const int RETICLEBOUNDY = 20;
+
+
+        private const float MOVEMENTDEADZONE = 0.1f;
+        private const int AIMSENSITIVITY = 30;
+
         private float fireTimer;
         private bool hit = false;
+        private bool usingMouse = false;
 
         public PlayerState HandleTransition(PlayerCharacter player)
         {
             if (hit)
                 return ScriptableObject.CreateInstance<HitState>();
-            if (Input.GetKeyUp("left shift"))
+            if (!Input.GetButton("Aim") && Input.GetAxis("AimAxis") == 0)
                 return ScriptableObject.CreateInstance<MeleeState>();
             return null;
         }
@@ -37,10 +43,11 @@ namespace Player
 
         public void HandleUpdate(PlayerCharacter player)
         {
-            doMovement(player);
+            setReticlePos(player);
+            doAim(player);
             doRotate(player);
             doFire(player);
-            doAim(player);
+            doMovement(player);
         }
 
         public void HandleHit(PlayerCharacter player)
@@ -52,45 +59,96 @@ namespace Player
                 player.Die();
         }
 
-        private void doMovement(PlayerCharacter player)
+        private void setReticlePos(PlayerCharacter player)
         {
-            float speed = player.moveSpeed * Time.deltaTime;
+            if (Utility.mouseChanged())
+                usingMouse = true;
+            if (Utility.rightStickChanged())
+                usingMouse = false;
 
-            if (Input.GetKey("up") || Input.GetKey("w"))
+            if (usingMouse)
+                player.reticlePos = Input.mousePosition;
+            else
+                setReticlePosController(player);
+        }
+
+        private void setReticlePosController(PlayerCharacter player)
+        {
+            var reticleUpperBoundX = Screen.width * (1.0f - (RETICLEBOUNDX / 100.0f));
+            var reticleLowerBoundX = Screen.width * RETICLEBOUNDX / 100;
+            var reticleUpperBoundY = Screen.height * (1.0f - (RETICLEBOUNDY / 100.0f));
+            var reticleLowerBoundY = Screen.height * RETICLEBOUNDY / 100;
+            
+            var upperBoundX = Screen.width * (1.0f - (BOUNDX / 100.0f));
+            var lowerBoundX = Screen.width * BOUNDX / 100;
+
+            if (player.reticlePos.x <= reticleUpperBoundX && player.reticlePos.x >= reticleLowerBoundX)
             {
-                player.transform.Translate(new Vector3(0, 0, speed));
+                var newPos = player.reticlePos.x + Input.GetAxis("RightHorizontal") * AIMSENSITIVITY;
+                player.reticlePos.x = Mathf.Clamp(newPos, reticleLowerBoundX, reticleUpperBoundX);
             }
-            else if (Input.GetKey("down") || Input.GetKey("s"))
+            if (player.reticlePos.y <= reticleUpperBoundY && player.reticlePos.y >= reticleLowerBoundY)
             {
-                player.transform.Translate(new Vector3(0, 0, -speed));
+                var newPos = player.reticlePos.y + Input.GetAxis("RightVertical") * AIMSENSITIVITY;
+                player.reticlePos.y = Mathf.Clamp(newPos, reticleLowerBoundY, reticleUpperBoundY);
             }
 
-            if (Input.GetKey("left") || Input.GetKey("a"))
+            // When stick released, gravitate towards center of screen
+            if ((Input.GetAxis("RightHorizontal") == 0 && Input.GetAxis("RightVertical") == 0)
+                && (player.reticlePos.x > upperBoundX || player.reticlePos.x < lowerBoundX))
             {
-                player.transform.Translate(new Vector3(-speed, 0, 0));
+                var targetPos = new Vector2(Screen.width / 2, Screen.height / 2);
+                player.reticlePos.x = Mathf.Lerp(player.reticlePos.x, targetPos.x, 0.1f);
             }
-            else if (Input.GetKey("right") || Input.GetKey("d"))
+        }
+
+        private void doAim(PlayerCharacter player)
+        {
+            Transform gun = player.transform.GetChild(0);
+
+            RaycastHit hitInfo;
+            Vector3 targetPos;
+            var ray = Camera.main.ScreenPointToRay(player.reticlePos);
+            if (Physics.Raycast(ray, out hitInfo, 1000))
             {
-                player.transform.Translate(new Vector3(speed, 0, 0));
+                targetPos = hitInfo.point;
+                gun.LookAt(targetPos);
+            }
+            else
+            {
+                // Roughly aim in the right direction if ray hits nothing
+                targetPos = player.reticlePos;
+                targetPos.x -= Screen.width / 2;
+                targetPos.y -= Screen.height / 2;
+                var mousePosX = targetPos.x;
+
+                // Look at a spot around an imaginary sphere around the character
+                var targetRadius = player.radius;
+                targetPos.z = Utility.getZOnSphere(targetPos.x, targetPos.y, targetRadius);
+                targetPos = player.transform.TransformPoint(targetPos);
+                gun.LookAt(targetPos);
+
+                // Account for the camera's rotated view
+                var camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
+                gun.Rotate(new Vector3(camera.rotation.eulerAngles.x * (1 - (Mathf.Abs(mousePosX) / (Screen.width))), 0, 0));
             }
         }
 
         private void doRotate(PlayerCharacter player)
         {
             // rotate at set speed when mouse is outside of bounding box
-            int fastUpperBoundX = Screen.width - (Screen.width * FASTBOUNDLOWERX / 100);
-            int fastLowerBoundX = Screen.width * FASTBOUNDLOWERX / 100;
-            int upperBoundX = Screen.width - (Screen.width * BOUNDLOWERX / 100);
-            int lowerBoundX = Screen.width * BOUNDUPPERX / 100;
-
-            var mousePos = Input.mousePosition;
-            if (mousePos.x > fastUpperBoundX)
+            var fastUpperBoundX = Screen.width * (1.0f - (FASTBOUNDX / 100.0f));
+            var fastLowerBoundX = Screen.width * FASTBOUNDX / 100;
+            var upperBoundX = Screen.width * (1.0f - (BOUNDX / 100.0f));
+            var lowerBoundX = Screen.width * BOUNDX / 100;
+            
+            if (player.reticlePos.x > fastUpperBoundX)
                 player.transform.Rotate(new Vector3(0, player.aimingTurnSpeed * Time.deltaTime * 2, 0));
-            else if (mousePos.x > upperBoundX)
+            else if (player.reticlePos.x > upperBoundX)
                 player.transform.Rotate(new Vector3(0, player.aimingTurnSpeed * Time.deltaTime, 0));
-            else if (mousePos.x < fastLowerBoundX)
+            else if (player.reticlePos.x < fastLowerBoundX)
                 player.transform.Rotate(new Vector3(0, -player.aimingTurnSpeed * Time.deltaTime * 2, 0));
-            else if (mousePos.x < lowerBoundX)
+            else if (player.reticlePos.x < lowerBoundX)
                 player.transform.Rotate(new Vector3(0, -player.aimingTurnSpeed * Time.deltaTime, 0));
         }
 
@@ -102,7 +160,7 @@ namespace Player
                 return;
             }
 
-            if ((Input.GetKey("space") || Input.GetMouseButton(0)))
+            if (Input.GetButtonDown("Fire") || Input.GetAxis("FireAxis") > 0)
             {
                 Transform gun = player.transform.GetChild(0).GetChild(0);
                 var projectilePos = gun.position + gun.up * gun.localScale.y * 2;
@@ -115,41 +173,27 @@ namespace Player
             }
         }
 
-        private void doAim(PlayerCharacter player)
+        private void doMovement(PlayerCharacter player)
         {
-            Transform gun = player.transform.GetChild(0);
+            float speed = player.moveSpeed * Time.deltaTime;
 
-            RaycastHit hitInfo;
-            Vector3 targetPos;
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hitInfo, 1000))
+            if (Input.GetAxis("Vertical") > MOVEMENTDEADZONE)
             {
-                targetPos = hitInfo.point;
-                gun.LookAt(targetPos);
+                player.transform.Translate(new Vector3(0, 0, speed));
             }
-            else
+            else if (Input.GetAxis("Vertical") < -MOVEMENTDEADZONE)
             {
-                // Roughly aim in the right direction if ray hits nothing
-                targetPos = Input.mousePosition;
-                targetPos.x -= Screen.width / 2;
-                targetPos.y -= Screen.height / 2;
-                var mousePosX = targetPos.x;
-
-                // Look at a spot around an imaginary sphere around the character
-                var targetRadius = player.radius;
-                targetPos.z = getZOnSphere(targetPos.x, targetPos.y, targetRadius);
-                targetPos = player.transform.TransformPoint(targetPos);
-                gun.LookAt(targetPos);
-
-                // Account for the camera's rotated view
-                var camera = GameObject.FindGameObjectWithTag("MainCamera").transform;
-                gun.Rotate(new Vector3(camera.rotation.eulerAngles.x * (1 - (Mathf.Abs(mousePosX) / (Screen.width))), 0, 0));
+                player.transform.Translate(new Vector3(0, 0, -speed));
             }
-        }
 
-        private float getZOnSphere(float x, float y, float r)
-        {
-            return Mathf.Sqrt((r * r) - (x * x) - (y * y)) / 2;
+            if (Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
+            {
+                player.transform.Translate(new Vector3(-speed, 0, 0));
+            }
+            else if (Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
+            {
+                player.transform.Translate(new Vector3(speed, 0, 0));
+            }
         }
     }
 

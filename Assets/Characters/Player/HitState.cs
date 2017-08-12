@@ -14,7 +14,7 @@ namespace Player
         {
             if (timer <= 0)
             {
-                if (Input.GetKey("left shift"))
+                if (Input.GetButton("Aim"))
                     return ScriptableObject.CreateInstance<ShooterState>();
                 else
                     return ScriptableObject.CreateInstance<MeleeState>();

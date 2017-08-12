@@ -42,9 +42,8 @@ public class CameraController : MonoBehaviour
     private void trackPlayer()
     {
         var target = player.transform;
-        
 
-        if (Input.GetKey("left shift"))
+        if (Input.GetButton("Aim") || Input.GetAxis("AimAxis") > 0)
         {
             transform.position = setFollowPoint(target.TransformPoint(new Vector3(followWidth, followHeight * 0.75f, -followDistance / 2)));
             Vector3 focalPoint = target.TransformPoint(new Vector3(aimViewOffsetX, aimViewOffsetY, aimViewOffsetZ));
