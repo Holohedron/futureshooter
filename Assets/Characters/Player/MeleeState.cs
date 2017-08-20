@@ -16,9 +16,9 @@ namespace Player
             return null;
         }
 
-        public void OnEnter(PlayerCharacter player)
+        public PlayerActions OnEnter(PlayerCharacter player)
         {
-            // do nothing
+            return PlayerActions.GetInstance();
         }
 
         public void OnExit(PlayerCharacter player)
@@ -28,8 +28,8 @@ namespace Player
 
         public void HandleUpdate(PlayerCharacter player)
         {
-            doMovement(player);
-            doMelee(player);
+            player.Actions.doMovement(player);
+            player.Actions.doMelee(player);
         }
 
         public void HandleHit(PlayerCharacter player)
@@ -40,42 +40,5 @@ namespace Player
             if (player.health <= 0)
                 player.Die();
         }
-
-        private void doMovement(PlayerCharacter player)
-        {
-            float speed = player.moveSpeed * Time.deltaTime;
-
-            if (Input.GetAxis("Vertical") > MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(0, 0, speed);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
-            }
-            else if (Input.GetAxis("Vertical") < -MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(0, 0, -speed);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
-            }
-
-            if (Input.GetAxis("RightHorizontal") < -MOVEMENTDEADZONE || Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
-            {
-                player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
-            }
-            else if (Input.GetAxis("RightHorizontal") > MOVEMENTDEADZONE || Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
-            {
-                player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
-            }
-        }
-
-        private void doMelee(PlayerCharacter player)
-        {
-            if (Input.GetButtonDown("Attack"))
-            {
-                var anim = player.GetComponentInChildren<Animator>();
-                anim.SetTrigger("SwingSword");
-            }
-        }
     }
-
 }

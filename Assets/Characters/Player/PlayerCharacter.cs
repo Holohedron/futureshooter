@@ -35,16 +35,18 @@ public class PlayerCharacter : MonoBehaviour
     public bool aiming = false;
     public bool dead = false;
 
+    private PlayerActions actions;
     private PlayerState state;
 
     // events
     public event EventHandler<PlayerDamagedEventArgs> PlayerDamaged;
 
-    private void Awake()
+    private void Start()
     {
         reticlePos = new Vector2(Screen.width/2, Screen.height/2);
         state = ScriptableObject.CreateInstance<MeleeState>();
         health = maxHealth;
+        actions = PlayerActions.GetInstance();
     }
 
     private void Update ()
@@ -60,7 +62,7 @@ public class PlayerCharacter : MonoBehaviour
         {
             state.OnExit(this);
             state = newState;
-            state.OnEnter(this);
+            actions = state.OnEnter(this);
         }
 
         state.HandleUpdate(this);
@@ -103,5 +105,10 @@ public class PlayerCharacter : MonoBehaviour
         state.HandleHit(this);
         if (PlayerDamaged != null)
             PlayerDamaged(this, new PlayerDamagedEventArgs() { Health = health });
+    }
+
+    public PlayerActions Actions
+    {
+        get { return actions; }
     }
 }

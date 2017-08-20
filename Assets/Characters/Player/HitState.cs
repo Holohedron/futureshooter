@@ -22,11 +22,13 @@ namespace Player
             return null;
         }
 
-        public void OnEnter(PlayerCharacter player)
+        public PlayerActions OnEnter(PlayerCharacter player)
         {
             timer = player.hitTime;
             normalMat = Resources.Load("PlayerMat", typeof(Material)) as Material;
             hurtMat = Resources.Load("PlayerHurtMat", typeof(Material)) as Material;
+
+            return PlayerActions.GetInstance();
         }
 
         public void OnExit(PlayerCharacter player)
