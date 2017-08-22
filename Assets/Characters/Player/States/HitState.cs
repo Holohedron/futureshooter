@@ -2,7 +2,7 @@
 
 namespace Player
 {
-    public class HitState : ScriptableObject, PlayerState
+    public class HitState : IPlayerState
     {
         private const int FLASHINTERVAL = 8;
         private int timer;
@@ -10,14 +10,14 @@ namespace Player
         Material normalMat;
         Material hurtMat;
 
-        public PlayerState HandleTransition(PlayerCharacter player)
+        public IPlayerState HandleTransition(PlayerCharacter player)
         {
             if (timer <= 0)
             {
-                if (Input.GetButton("Aim"))
-                    return ScriptableObject.CreateInstance<ShooterState>();
+                if (Input.GetButton("Aim") && Input.GetAxis("AimAxis") == 0)
+                    return new ShooterState();
                 else
-                    return ScriptableObject.CreateInstance<MeleeState>();
+                    return new MeleeState();
             }
             return null;
         }
@@ -45,7 +45,7 @@ namespace Player
 
         public void HandleHit(PlayerCharacter player)
         {
-
+            // nothing
         }
 
         private void Flash(PlayerCharacter player)

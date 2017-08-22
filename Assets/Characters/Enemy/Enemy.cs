@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     public bool dbugFreeze = false;
     
     private GameObject player;
-    private EnemyState state;
+    private IEnemyState state;
 
     public delegate void EnemyHit();
     public event EnemyHit OnEnemyHit;
@@ -25,14 +25,14 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        state = ScriptableObject.CreateInstance<StopState>();
+        state = new StopState();
     }
 
     private void Update ()
     {
         if (player.GetComponent<PlayerCharacter>().dead)
         {
-            state = ScriptableObject.CreateInstance<StopState>();
+            state = new StopState();
             return;
         }
 

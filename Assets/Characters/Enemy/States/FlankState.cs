@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public class FlankState : BaseEnemyState, EnemyState
+public class FlankState : EnemyBaseState, IEnemyState
 {
     Vector3 flankCenter;
     bool flankingLeft;
     private int timer;
     private Transform player;
 
-    public new EnemyState HandleTransition(Enemy enemy)
+    public new IEnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -17,9 +17,9 @@ public class FlankState : BaseEnemyState, EnemyState
             return null;
 
         if (Random.value > 0.5f)
-            return ScriptableObject.CreateInstance<StopState>();
+            return new StopState();
         else
-            return ScriptableObject.CreateInstance<AdvanceState>();
+            return new AdvanceState();
     }
 
     public new void HandleUpdate(Enemy enemy)

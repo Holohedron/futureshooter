@@ -5,7 +5,6 @@ namespace Player
     public class PlayerActions
     {
         private const float MOVEMENTDEADZONE = 0.01f;
-
         private const float FIRETIMERMAX = 60.0f;
         private const int AIMSENSITIVITY = 30;
         private const int BOUNDX = 40; // percent of the width of the screen
@@ -13,11 +12,15 @@ namespace Player
         private const int RETICLEBOUNDX = 35;
         private const int RETICLEBOUNDY = 20;
 
+        private Vector3 movementVec = Vector3.zero;
         private float fireTimer;
         private bool usingMouse = false;
-
+        
         private static PlayerActions instance;
-        private PlayerActions() { }
+
+        private PlayerActions()
+        {
+        }
 
         public static PlayerActions GetInstance()
         {
@@ -26,7 +29,7 @@ namespace Player
             return instance;
         }
 
-        public void doMovement(PlayerCharacter player)
+        public void Move(PlayerCharacter player, bool strafe = false)
         {
             float speed = player.moveSpeed * Time.deltaTime;
 
@@ -43,48 +46,35 @@ namespace Player
                 player.GetComponent<CharacterController>().Move(moveVec);
             }
 
-            if (Input.GetAxis("RightHorizontal") < -MOVEMENTDEADZONE || Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
+            if (strafe)
             {
-                player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
+                if (Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
+                {
+                    Vector3 moveVec = new Vector3(-speed, 0, 0);
+                    moveVec = player.transform.TransformDirection(moveVec);
+                    player.GetComponent<CharacterController>().Move(moveVec);
+                }
+                else if (Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
+                {
+                    Vector3 moveVec = new Vector3(speed, 0, 0);
+                    moveVec = player.transform.TransformDirection(moveVec);
+                    player.GetComponent<CharacterController>().Move(moveVec);
+                }
             }
-            else if (Input.GetAxis("RightHorizontal") > MOVEMENTDEADZONE || Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
+            else
             {
-                player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
-            }
-        }
-
-        public void doMovementWithStrafe(PlayerCharacter player)
-        {
-            float speed = player.moveSpeed * Time.deltaTime;
-
-            if (Input.GetAxis("Vertical") > MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(0, 0, speed);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
-            }
-            else if (Input.GetAxis("Vertical") < -MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(0, 0, -speed);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
-            }
-
-            if (Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(-speed, 0, 0);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
-            }
-            else if (Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
-            {
-                Vector3 moveVec = new Vector3(speed, 0, 0);
-                moveVec = player.transform.TransformDirection(moveVec);
-                player.GetComponent<CharacterController>().Move(moveVec);
+                if (Input.GetAxis("RightHorizontal") < -MOVEMENTDEADZONE || Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
+                {
+                    player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
+                }
+                else if (Input.GetAxis("RightHorizontal") > MOVEMENTDEADZONE || Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
+                {
+                    player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
+                }
             }
         }
 
-        public void doMelee(PlayerCharacter player)
+        public void Melee(PlayerCharacter player)
         {
             if (Input.GetButtonDown("Attack"))
             {
@@ -93,7 +83,7 @@ namespace Player
             }
         }
 
-        public void doFire(PlayerCharacter player)
+        public void Fire(PlayerCharacter player)
         {
             if (fireTimer > 0)
             {
@@ -114,7 +104,7 @@ namespace Player
             }
         }
 
-        public void doAim(PlayerCharacter player)
+        public void Aim(PlayerCharacter player)
         {
             Transform gun = player.transform.GetChild(0);
 
@@ -146,7 +136,7 @@ namespace Player
             }
         }
 
-        public void doRotate(PlayerCharacter player)
+        public void Rotate(PlayerCharacter player)
         {
             // rotate at set speed when mouse is outside of bounding box
             var fastUpperBoundX = Screen.width * (1.0f - (FASTBOUNDX / 100.0f));
@@ -164,7 +154,7 @@ namespace Player
                 player.transform.Rotate(new Vector3(0, -player.aimingTurnSpeed * Time.deltaTime, 0));
         }
 
-        public void setReticlePos(PlayerCharacter player)
+        public void SetReticlePos(PlayerCharacter player)
         {
             if (Utility.mouseChanged())
                 usingMouse = true;
@@ -205,6 +195,37 @@ namespace Player
                 var targetPos = new Vector2(Screen.width / 2, Screen.height / 2);
                 player.reticlePos.x = Mathf.Lerp(player.reticlePos.x, targetPos.x, 0.1f);
             }
+        }
+
+        public void Jump(PlayerCharacter player)
+        {
+            movementVec.y = player.jumpSpeed * Time.deltaTime;
+            player.GetComponent<CharacterController>().Move(movementVec);
+        }
+
+        public void Fall(PlayerCharacter player)
+        {
+            movementVec.y -= player.gravity * Time.deltaTime;
+            player.GetComponent<CharacterController>().Move(movementVec);
+        }
+
+        public void GetHit(PlayerCharacter player)
+        {
+            --player.health;
+            player.GetComponent<AudioSource>().PlayOneShot(player.hurtSFX);
+            if (player.health <= 0)
+                Die(player);
+        }
+
+        public void Die(PlayerCharacter player)
+        {
+            player.GetComponent<CharacterController>().enabled = false;
+            player.gameObject.AddComponent<CapsuleCollider>();
+            player.gameObject.AddComponent<Rigidbody>();
+            player.transform.Rotate(new Vector3(1, 0, 1)); // to make sure we fall over dramatically
+
+            player.dead = true;
+            player.aiming = false;
         }
     }
 }

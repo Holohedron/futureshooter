@@ -17,6 +17,9 @@ public class PlayerCharacter : MonoBehaviour
     public float aimingTurnSpeed;
     public float fireRate;
 
+    public float jumpSpeed;
+    public float gravity;
+
     public int maxHealth = 4;
     public int health;
     public int hitTime;
@@ -36,7 +39,7 @@ public class PlayerCharacter : MonoBehaviour
     public bool dead = false;
 
     private PlayerActions actions;
-    private PlayerState state;
+    private IPlayerState state;
 
     // events
     public event EventHandler<PlayerDamagedEventArgs> PlayerDamaged;
@@ -44,7 +47,7 @@ public class PlayerCharacter : MonoBehaviour
     private void Start()
     {
         reticlePos = new Vector2(Screen.width/2, Screen.height/2);
-        state = ScriptableObject.CreateInstance<MeleeState>();
+        state = new MeleeState();
         health = maxHealth;
         actions = PlayerActions.GetInstance();
     }
@@ -86,22 +89,8 @@ public class PlayerCharacter : MonoBehaviour
         }
     }
 
-    public void Die()
-    {
-        GetComponent<CharacterController>().enabled = false;
-        gameObject.AddComponent<CapsuleCollider>();
-        gameObject.AddComponent<Rigidbody>();
-        transform.Rotate(new Vector3(1, 0, 1)); // to make sure we fall over dramatically
-
-        dead = true;
-        aiming = false;
-    }
-
     public void OnPlayerDamaged()
     {
-        //--health;
-        //if (health <= 0)
-        //    Die();
         state.HandleHit(this);
         if (PlayerDamaged != null)
             PlayerDamaged(this, new PlayerDamagedEventArgs() { Health = health });

@@ -1,9 +1,9 @@
 ﻿
 namespace Player
 {
-	public interface PlayerState
+	public interface IPlayerState
     {
-        PlayerState HandleTransition(PlayerCharacter player);
+        IPlayerState HandleTransition(PlayerCharacter player);
         PlayerActions OnEnter(PlayerCharacter player);
         void OnExit(PlayerCharacter player);
         void HandleUpdate(PlayerCharacter player);

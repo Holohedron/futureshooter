@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public class BaseEnemyState : ScriptableObject, EnemyState
+public class EnemyBaseState : IEnemyState
 {
     protected bool gotHit = false;
 
-    public EnemyState HandleTransition(Enemy enemy)
+    public IEnemyState HandleTransition(Enemy enemy)
     {
         if (gotHit)
-            return ScriptableObject.CreateInstance<HitState>();
+            return new HitState();
 
         return null;
     }

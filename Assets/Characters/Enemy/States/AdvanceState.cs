@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class AdvanceState : BaseEnemyState, EnemyState
+public class AdvanceState : EnemyBaseState, IEnemyState
 {
     private int timer;
     private Transform player;
 
-    public new EnemyState HandleTransition(Enemy enemy)
+    public new IEnemyState HandleTransition(Enemy enemy)
     {
         var baseTransition = base.HandleTransition(enemy);
         if (baseTransition != null)
@@ -15,9 +15,9 @@ public class AdvanceState : BaseEnemyState, EnemyState
             return null;
         
         if (Random.value > 0.5f)
-            return ScriptableObject.CreateInstance<StopState>();
+            return new StopState();
         else
-            return ScriptableObject.CreateInstance<FlankState>();
+            return new FlankState();
     }
 
     public new void HandleUpdate(Enemy enemy)

@@ -1,7 +1,7 @@
 ﻿
-public interface EnemyState
+public interface IEnemyState
 {
-    EnemyState HandleTransition(Enemy enemy);
+    IEnemyState HandleTransition(Enemy enemy);
     void HandleUpdate(Enemy enemy);
     void OnEnter(Enemy enemy);
     void OnExit(Enemy enemy);

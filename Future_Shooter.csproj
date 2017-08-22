@@ -81,19 +81,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CameraController.cs" />
-    <Compile Include="Assets\Characters\Enemy\FlankState.cs" />
-    <Compile Include="Assets\Characters\Enemy\BaseEnemyState.cs" />
-    <Compile Include="Assets\Characters\Enemy\HitState.cs" />
-    <Compile Include="Assets\Characters\Enemy\StopState.cs" />
-    <Compile Include="Assets\Characters\Enemy\AdvanceState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\EnemyBaseState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\FlankState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\HitState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\IEnemyState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\StopState.cs" />
+    <Compile Include="Assets\Characters\Enemy\States\AdvanceState.cs" />
     <Compile Include="Assets\Characters\Enemy\Enemy.cs" />
-    <Compile Include="Assets\Characters\Enemy\EnemyState.cs" />
-    <Compile Include="Assets\Characters\Player\HitState.cs" />
+    <Compile Include="Assets\Characters\Player\States\HitState.cs" />
     <Compile Include="Assets\Characters\Player\PlayerActions.cs" />
-    <Compile Include="Assets\Characters\Player\ShooterState.cs" />
-    <Compile Include="Assets\Characters\Player\MeleeState.cs" />
+    <Compile Include="Assets\Characters\Player\States\IPlayerState.cs" />
+    <Compile Include="Assets\Characters\Player\States\JumpState.cs" />
+    <Compile Include="Assets\Characters\Player\States\PlayerBaseState.cs" />
+    <Compile Include="Assets\Characters\Player\States\ShooterState.cs" />
+    <Compile Include="Assets\Characters\Player\States\MeleeState.cs" />
     <Compile Include="Assets\Characters\Player\PlayerCharacter.cs" />
-    <Compile Include="Assets\Characters\Player\PlayerState.cs" />
     <Compile Include="Assets\HUD.cs" />
     <Compile Include="Assets\Hitbox.cs" />
     <Compile Include="Assets\Utility.cs" />
@@ -119,6 +121,7 @@
     <None Include="Assets\UnityChan\Stage\Shader\AlphaMask.shader" />
     <None Include="Assets\UnityChan\license.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>
