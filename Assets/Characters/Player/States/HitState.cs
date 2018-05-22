@@ -6,7 +6,6 @@ namespace Player
     {
         private const int FLASHINTERVAL = 8;
         private int timer;
-        private int bounceTimer;
         Material normalMat;
         Material hurtMat;
 

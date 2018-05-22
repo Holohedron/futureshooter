@@ -205,8 +205,15 @@ namespace Player
 
         public void Fall(PlayerCharacter player)
         {
-            movementVec.y -= player.gravity * Time.deltaTime;
-            player.GetComponent<CharacterController>().Move(movementVec);
+            if (!player.GetComponent<CharacterController>().isGrounded)
+            {
+                movementVec.y -= player.gravity * Time.deltaTime;
+                player.GetComponent<CharacterController>().Move(movementVec);
+            }
+            else
+            {
+                movementVec.y = -1;
+            }
         }
 
         public void GetHit(PlayerCharacter player)

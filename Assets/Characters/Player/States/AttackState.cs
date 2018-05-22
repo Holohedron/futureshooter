@@ -1,29 +1,28 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Player
 {
-    public class JumpState : PlayerBaseState, IPlayerState
+    public class AttackState : PlayerBaseState, IPlayerState
     {
-        private CharacterController playerCharController;
+        private const int FLASHINTERVAL = 8;
 
         public new IPlayerState HandleTransition(PlayerCharacter player)
         {
-            IPlayerState baseTransition = base.HandleTransition(player);
-            if (baseTransition != null)
-                return baseTransition;
-            if (playerCharController.isGrounded)
+            if (!player.attacking)
+            {
                 return new MeleeState();
+            }
             return null;
         }
 
         public new PlayerActions OnEnter(PlayerCharacter player)
         {
-            var baseActions = base.OnEnter(player);
-            playerCharController = player.GetComponent<CharacterController>();
-            player.Actions.Jump(player);
+            Debug.Log("entered attack state");
+            player.attacking = true;
+            var anim = player.GetComponentInChildren<Animator>();
+            anim.SetTrigger("SwingSword");
 
-            return baseActions;
+            return PlayerActions.GetInstance();
         }
 
         public new void OnExit(PlayerCharacter player)
@@ -34,8 +33,6 @@ namespace Player
         public new void HandleUpdate(PlayerCharacter player)
         {
             base.HandleUpdate(player);
-
-            player.Actions.Move(player);
         }
 
         public new void HandleHit(PlayerCharacter player)

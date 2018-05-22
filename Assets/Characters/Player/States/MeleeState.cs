@@ -6,7 +6,7 @@ namespace Player
     {
         private bool hit;
 
-        public override IPlayerState HandleTransition(PlayerCharacter player)
+        public new IPlayerState HandleTransition(PlayerCharacter player)
         {
             IPlayerState baseTransition = base.HandleTransition(player);
             if (baseTransition != null)
@@ -16,30 +16,34 @@ namespace Player
                 return new ShooterState();
             if (Input.GetButtonDown("Jump"))
                 return new JumpState();
+            if (Input.GetButton("Attack"))
+                return new AttackState();
+            if (Input.GetButtonDown("Dash"))
+                return new DashState();
             return null;
         }
 
-        public override PlayerActions OnEnter(PlayerCharacter player)
+        public new PlayerActions OnEnter(PlayerCharacter player)
         {
             var baseActions = base.OnEnter(player);
 
             return baseActions;
         }
 
-        public override void OnExit(PlayerCharacter player)
+        public new void OnExit(PlayerCharacter player)
         {
             base.OnExit(player);
         }
 
-        public override void HandleUpdate(PlayerCharacter player)
+        public new void HandleUpdate(PlayerCharacter player)
         {
             base.HandleUpdate(player);
 
             player.Actions.Move(player);
-            player.Actions.Melee(player);
+            //player.Actions.Melee(player);
         }
 
-        public override void HandleHit(PlayerCharacter player)
+        public new void HandleHit(PlayerCharacter player)
         {
             base.HandleHit(player);
         }

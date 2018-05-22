@@ -19,6 +19,8 @@ public class PlayerCharacter : MonoBehaviour
 
     public float jumpSpeed;
     public float gravity;
+    public int dashTime;
+    public float dashDistance;
 
     public int maxHealth = 4;
     public int health;
@@ -35,6 +37,7 @@ public class PlayerCharacter : MonoBehaviour
     public Texture2D crosshairImage;
     public Vector2 reticlePos;
 
+    public bool attacking = false;
     public bool aiming = false;
     public bool dead = false;
 

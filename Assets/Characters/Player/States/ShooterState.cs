@@ -4,7 +4,7 @@ namespace Player
 {
     public class ShooterState : PlayerBaseState, IPlayerState
     {        
-        public IPlayerState HandleTransition(PlayerCharacter player)
+        public new IPlayerState HandleTransition(PlayerCharacter player)
         {
             IPlayerState baseTransition = base.HandleTransition(player);
             if (baseTransition != null)
@@ -14,7 +14,7 @@ namespace Player
             return null;
         }
 
-        public PlayerActions OnEnter(PlayerCharacter player)
+        public new PlayerActions OnEnter(PlayerCharacter player)
         {
             var baseActions = base.OnEnter(player);
 
@@ -23,7 +23,7 @@ namespace Player
             return baseActions;
         }
 
-        public void OnExit(PlayerCharacter player)
+        public new void OnExit(PlayerCharacter player)
         {
             base.OnExit(player);
 
@@ -32,7 +32,7 @@ namespace Player
             player.aiming = false;
         }
 
-        public void HandleUpdate(PlayerCharacter player)
+        public new void HandleUpdate(PlayerCharacter player)
         {
             base.HandleUpdate(player);
 
@@ -43,7 +43,7 @@ namespace Player
             player.Actions.Move(player, true);
         }
 
-        public void HandleHit(PlayerCharacter player)
+        public new void HandleHit(PlayerCharacter player)
         {
             base.HandleHit(player);
         }
