@@ -11,6 +11,8 @@ public class PlayerDamagedEventArgs : EventArgs
 public class PlayerCharacter : MonoBehaviour
 {
     private const float FIRETIMERMAX = 60f;
+    private const float GROUNDCHECKDIST = 1.1f;
+    private const int GROUNDGRACETIME = 5;
 
     public float moveSpeed;
     public float turnSpeed;
@@ -36,11 +38,13 @@ public class PlayerCharacter : MonoBehaviour
     public Projectile projectileFab;
     public Texture2D crosshairImage;
     public Vector2 reticlePos;
-
+    
+    public bool grounded = false;
     public bool attacking = false;
     public bool aiming = false;
     public bool dead = false;
 
+    private int groundgracetimer = 0;
     private PlayerActions actions;
     private IPlayerState state;
 
@@ -61,6 +65,19 @@ public class PlayerCharacter : MonoBehaviour
         {
             return;
         }
+
+        // Check Ground
+        RaycastHit hitInfo;
+        if (groundgracetimer <= 0 && Physics.Raycast(transform.position, Vector3.down, out hitInfo, GROUNDCHECKDIST, ~LayerMask.NameToLayer("Terrain")))
+        {
+            grounded = true;
+        }
+        else
+        {
+            groundgracetimer--;
+            grounded = false;
+        }
+        
 
         // State implementation
         var newState = state.HandleTransition(this);
@@ -102,5 +119,11 @@ public class PlayerCharacter : MonoBehaviour
     public PlayerActions Actions
     {
         get { return actions; }
+    }
+
+    public void LeaveGround()
+    {
+        this.grounded = false;
+        this.groundgracetimer = GROUNDGRACETIME;
     }
 }

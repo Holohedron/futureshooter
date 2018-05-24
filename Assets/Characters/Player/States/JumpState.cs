@@ -5,14 +5,12 @@ namespace Player
 {
     public class JumpState : PlayerBaseState, IPlayerState
     {
-        private CharacterController playerCharController;
-
         public new IPlayerState HandleTransition(PlayerCharacter player)
         {
             IPlayerState baseTransition = base.HandleTransition(player);
             if (baseTransition != null)
                 return baseTransition;
-            if (playerCharController.isGrounded)
+            if (player.grounded)
                 return new MeleeState();
             return null;
         }
@@ -20,7 +18,6 @@ namespace Player
         public new PlayerActions OnEnter(PlayerCharacter player)
         {
             var baseActions = base.OnEnter(player);
-            playerCharController = player.GetComponent<CharacterController>();
             player.Actions.Jump(player);
 
             return baseActions;

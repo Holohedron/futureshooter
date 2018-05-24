@@ -199,13 +199,14 @@ namespace Player
 
         public void Jump(PlayerCharacter player)
         {
-            movementVec.y = player.jumpSpeed * Time.deltaTime;
+            player.LeaveGround();
+            movementVec.y = player.jumpSpeed;
             player.GetComponent<CharacterController>().Move(movementVec);
         }
 
         public void Fall(PlayerCharacter player)
         {
-            if (!player.GetComponent<CharacterController>().isGrounded)
+            if (!player.grounded)
             {
                 movementVec.y -= player.gravity * Time.deltaTime;
                 player.GetComponent<CharacterController>().Move(movementVec);

@@ -17,7 +17,6 @@ namespace Player
 
         public new PlayerActions OnEnter(PlayerCharacter player)
         {
-            Debug.Log("entered attack state");
             player.attacking = true;
             var anim = player.GetComponentInChildren<Animator>();
             anim.SetTrigger("SwingSword");
