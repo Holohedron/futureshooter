@@ -20,6 +20,7 @@ namespace Player
 
             // zoom camera in
             player.aiming = true;
+            CameraManager.Instance().PrioritizeAimCam();
             return baseActions;
         }
 
@@ -30,6 +31,7 @@ namespace Player
             // zoom camera out
             player.transform.GetChild(0).rotation = new Quaternion(0, 0, 0, 0);
             player.aiming = false;
+            CameraManager.Instance().PrioritizeFreeCam();
         }
 
         public new void HandleUpdate(PlayerCharacter player)
@@ -40,7 +42,7 @@ namespace Player
             player.Actions.Aim(player);
             player.Actions.Rotate(player);
             player.Actions.Fire(player);
-            player.Actions.Move(player, true);
+            player.Actions.ShooterMove(player);
         }
 
         public new void HandleHit(PlayerCharacter player)

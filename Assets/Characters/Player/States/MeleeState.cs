@@ -39,7 +39,7 @@ namespace Player
         {
             base.HandleUpdate(player);
 
-            player.Actions.Move(player);
+            player.Actions.MeleeMove(player);
         }
 
         public new void HandleHit(PlayerCharacter player)

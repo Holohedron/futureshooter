@@ -13,6 +13,7 @@ namespace Player
         private const int RETICLEBOUNDY = 20;
 
         private Vector3 movementVec = Vector3.zero;
+        private Camera mainCam = Camera.main;
         private float fireTimer;
         private bool usingMouse = false;
         
@@ -28,8 +29,25 @@ namespace Player
                 instance = new PlayerActions();
             return instance;
         }
+        public void MeleeMove(PlayerCharacter player, bool strafe = false)
+        {
+            float speed = player.moveSpeed * Time.deltaTime;
 
-        public void Move(PlayerCharacter player, bool strafe = false)
+            // Move based on direction from input
+            var zin = Input.GetAxis("Vertical");
+            var zMove = Mathf.Abs(zin) > MOVEMENTDEADZONE ? speed * zin : 0;
+            var xin = Input.GetAxis("Horizontal");
+            var xMove = Mathf.Abs(xin) > MOVEMENTDEADZONE ? speed * xin : 0;
+            var moveVec = mainCam.transform.TransformDirection(new Vector3(xMove, 0, zMove));
+            player.GetComponent<CharacterController>().Move(moveVec);
+
+            // Handle rotation
+            Vector3 newDir = Vector3.RotateTowards(player.transform.forward, moveVec, player.turnSpeed, 0.0f);
+            newDir.y = 0;
+            player.transform.rotation = Quaternion.LookRotation(newDir);
+        }
+
+        public void ShooterMove(PlayerCharacter player)
         {
             float speed = player.moveSpeed * Time.deltaTime;
 
@@ -46,31 +64,17 @@ namespace Player
                 player.GetComponent<CharacterController>().Move(moveVec);
             }
 
-            if (strafe)
+            if (Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
             {
-                if (Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
-                {
-                    Vector3 moveVec = new Vector3(-speed, 0, 0);
-                    moveVec = player.transform.TransformDirection(moveVec);
-                    player.GetComponent<CharacterController>().Move(moveVec);
-                }
-                else if (Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
-                {
-                    Vector3 moveVec = new Vector3(speed, 0, 0);
-                    moveVec = player.transform.TransformDirection(moveVec);
-                    player.GetComponent<CharacterController>().Move(moveVec);
-                }
+                Vector3 moveVec = new Vector3(-speed, 0, 0);
+                moveVec = player.transform.TransformDirection(moveVec);
+                player.GetComponent<CharacterController>().Move(moveVec);
             }
-            else
+            else if (Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
             {
-                if (Input.GetAxis("RightHorizontal") < -MOVEMENTDEADZONE || Input.GetAxis("Horizontal") < -MOVEMENTDEADZONE)
-                {
-                    player.transform.Rotate(new Vector3(0, -player.turnSpeed, 0));
-                }
-                else if (Input.GetAxis("RightHorizontal") > MOVEMENTDEADZONE || Input.GetAxis("Horizontal") > MOVEMENTDEADZONE)
-                {
-                    player.transform.Rotate(new Vector3(0, player.turnSpeed, 0));
-                }
+                Vector3 moveVec = new Vector3(speed, 0, 0);
+                moveVec = player.transform.TransformDirection(moveVec);
+                player.GetComponent<CharacterController>().Move(moveVec);
             }
         }
 

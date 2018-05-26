@@ -30,7 +30,7 @@ namespace Player
             var baseActions = base.OnEnter(player);
             timer = player.dashTime;
             dashDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            dashDirection = player.transform.TransformDirection(dashDirection).normalized;
+            dashDirection = Camera.main.transform.TransformDirection(dashDirection).normalized;
             dashSpeed = player.dashDistance / player.dashTime;
 
             return baseActions;
