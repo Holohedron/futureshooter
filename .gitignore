@@ -6,6 +6,7 @@ Library
 ProjectSettings
 Resources
 Temp
+obj/Debug
 
 # Temporary/Experimental Resources
 Assets/UnityChan*

@@ -4,8 +4,6 @@ namespace Player
 {
     public class MeleeState : PlayerBaseState, IPlayerState
     {
-        private bool hit;
-
         public new IPlayerState HandleTransition(PlayerCharacter player)
         {
             IPlayerState baseTransition = base.HandleTransition(player);

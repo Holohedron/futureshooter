@@ -45,6 +45,9 @@ namespace Player
             Vector3 newDir = Vector3.RotateTowards(player.transform.forward, moveVec, player.turnSpeed, 0.0f);
             newDir.y = 0;
             player.transform.rotation = Quaternion.LookRotation(newDir);
+
+            // Animation
+            player.GetComponent<Animator>().SetFloat("Speed", Mathf.Abs(xin) + Mathf.Abs(zin));
         }
 
         public void ShooterMove(PlayerCharacter player)

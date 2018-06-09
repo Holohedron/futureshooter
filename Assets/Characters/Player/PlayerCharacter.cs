@@ -31,6 +31,7 @@ public class PlayerCharacter : MonoBehaviour
 
     public AudioClip projectileSFX;
     public AudioClip hurtSFX;
+    public GameObject sword;
     
     // for tuning aim when aiming at nothing
     public float radius = Screen.width/2;

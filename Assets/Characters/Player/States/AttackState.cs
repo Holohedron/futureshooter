@@ -5,9 +5,14 @@ namespace Player
     public class AttackState : PlayerBaseState, IPlayerState
     {
         private const int FLASHINTERVAL = 8;
+        private Animator anim;
 
         public new IPlayerState HandleTransition(PlayerCharacter player)
         {
+            IPlayerState baseTransition = base.HandleTransition(player);
+            if (baseTransition != null)
+                return baseTransition;
+
             if (!player.attacking)
             {
                 return new MeleeState();
@@ -18,7 +23,7 @@ namespace Player
         public new PlayerActions OnEnter(PlayerCharacter player)
         {
             player.attacking = true;
-            var anim = player.GetComponentInChildren<Animator>();
+            anim = player.sword.GetComponent<Animator>();
             anim.SetTrigger("SwingSword");
 
             return PlayerActions.GetInstance();
